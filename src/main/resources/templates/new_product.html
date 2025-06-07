@@ -1,40 +1,59 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 
 <head th:insert="~{common :: commonHead}">
     <title>Create New Product</title>
 </head>
 
 <body>
-<div class="container">
-    <h1 class="mt-5 text-center">Create New Product</h1>
-    <br />
-    <form th:action="@{/products/save}" th:object="${product}" method="post">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="productName" class="form-label">Product Name:</label>
-                    <input type="text" id="productName" class="form-control" th:field="*{name}" />
-                </div>
-                <div class="mb-3">
-                    <label for="brand" class="form-label">Brand:</label>
-                    <input type="text" id="brand" class="form-control" th:field="*{brand}" />
-                </div>
-                <div class="mb-3">
-                    <label for="madeIn" class="form-label">Made In:</label>
-                    <input type="text" id="madeIn" class="form-control" th:field="*{madeIn}" />
-                </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price:</label>
-                    <input type="text" id="price" class="form-control" th:field="*{price}" />
-                </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Save</button>
+<div class="container mt-3">
+    <!-- 로그인 사용자 정보 + 로그아웃 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div sec:authorize="isAuthenticated()">
+            <span>안녕하세요, <b><span sec:authentication="principal.username"></span></b> 님!</span>
+        </div>
+        <div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">로그아웃</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ROLE_ADMIN 전용: 상품 등록 폼 -->
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <h1 class="text-center">Create New Product</h1>
+        <br />
+        <form th:action="@{/products/save}" th:object="${product}" method="post">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Product Name:</label>
+                        <input type="text" id="productName" class="form-control" th:field="*{name}" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="brand" class="form-label">Brand:</label>
+                        <input type="text" id="brand" class="form-control" th:field="*{brand}" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="madeIn" class="form-label">Made In:</label>
+                        <input type="text" id="madeIn" class="form-control" th:field="*{madeIn}" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price:</label>
+                        <input type="text" id="price" class="form-control" th:field="*{price}" />
+                        <div th:if="${#fields.hasErrors('price')}" class="text-danger" th:errors="*{price}"></div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
+
+    <!-- ROLE_USER에게는 메시지만 표시 -->
 </div>
 
 <!-- Bootstrap JS 삽입 -->

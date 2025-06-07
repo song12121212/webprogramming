@@ -1,15 +1,34 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 
 <head th:insert="~{common :: commonHead}">
   <title>Product Manager</title>
 </head>
 
 <body>
-<div class="container">
-  <h1 class="mt-5">Product List</h1>
-  <a class="btn btn-primary mb-3" th:href="@{/products/new}">Create New Product</a>
+<div class="container mt-4">
+
+  <!-- 로그인 사용자 정보 + 로그아웃 버튼 -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div sec:authorize="isAuthenticated()">
+      <span>안녕하세요, <b><span sec:authentication="principal.username"></span></b> 님!</span>
+    </div>
+    <div>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">로그아웃</button>
+      </form>
+    </div>
+  </div>
+
+  <h1 class="mb-3">Product List</h1>
+
+  <!-- ROLE_ADMIN만 "Create New Product" 가능 -->
+  <div sec:authorize="hasRole('ROLE_ADMIN')">
+    <a class="btn btn-primary mb-3" th:href="@{/products/new}">Create New Product</a>
+    <a class="btn btn-primary btn-sm" th:href="@{'/admin/users'}">관리자 페이지</a>
+  </div>
 
   <table class="table table-bordered">
     <thead>
@@ -30,15 +49,24 @@
       <td th:text="${product.madeIn}">Made in</td>
       <td th:text="${product.price}">Price</td>
       <td>
-        <a class="btn btn-primary btn-sm" th:href="@{'/products/edit/' + ${product.id}}">Edit</a>
-        <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}">Delete</a>
+        <!-- ROLE_ADMIN만 Edit/Delete 가능 -->
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+          <a class="btn btn-primary btn-sm" th:href="@{'/products/edit/' + ${product.id}}">Edit</a>
+          <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}">Delete</a>
+        </div>
+
+        <!-- ROLE_USER이면서 ROLE_ADMIN이 아닌 사용자만 '권한 없음' 표시 -->
+        <div sec:authorize="hasRole('ROLE_USER') and !hasRole('ROLE_ADMIN')">
+          <span class="text-muted">권한 없음</span>
+        </div>
       </td>
+
     </tr>
     </tbody>
   </table>
 </div>
 
-<!-- Bootstrap JS fragment 삽입 -->
+<!-- Bootstrap JS fragment -->
 <div th:insert="~{common :: commonScript}"></div>
 </body>
 </html>

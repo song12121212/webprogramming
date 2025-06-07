@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head th:insert="~{common :: commonHead}">
+    <title>관리자 - 사용자 목록</title>
+</head>
+
+<body>
+<div class="container mt-4">
+    <h2 class="mb-4">전체 사용자 목록</h2>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>사용자 ID</th>
+            <th>이메일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${userList}">
+            <td th:text="${user.id}">ID</td>
+            <td th:text="${user.email}">Email</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a th:href="@{/products}" class="btn btn-outline-primary">← 상품 목록으로</a>
+    </div>
+</div>
+
+<div th:insert="~{common :: commonScript}"></div>
+</body>
+</html>
